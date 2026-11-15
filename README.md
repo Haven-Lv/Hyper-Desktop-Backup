@@ -9,7 +9,8 @@
 ```
 miui_desktop_tool\
 ├── miui_launcher.py     # 底层：adb 连接、root 读写桌面数据库、快照/回写
-├── miui_desktop.py      # 命令行工具（入口）
+├── miui_desktop.py      # 命令行工具（入口），含 HTML 预览渲染
+├── .gitignore           # 忽略 __pycache__/ 与 备份记录/（备份数据不上传）
 └── README.md
 ```
 
@@ -88,10 +89,11 @@ python miui_desktop.py list
 ### 4.2 `backup` —— 备份当前桌面
 
 ```powershell
-python miui_desktop.py backup [--dir 输出目录] [--html] [--raw]
+python miui_desktop.py backup [--dir 输出目录] [--raw]
 ```
 
 - 无参数：默认存到「当前目录下的 `备份记录\`」（目录不存在会自动创建）；
+- HTML 预览**默认就会生成**，没有 `--html` 开关，要关掉请在代码里改；
 - `--dir D:\mybackup`：自定义备份根目录（根目录下同样按次数生成子文件夹）；
 - `--raw`：额外保留一份原始 `.db` 数据库原件（放该次备份文件夹 `raw_时间戳\` 下）。
 
@@ -116,15 +118,15 @@ python miui_desktop.py view 备份记录\备份_20260830_153000\桌面备份_202
 输出示例：
 
 ```
-Dock: 相册、电话、短信、相机
+Dock: 相册、短信、电话、相机
 
 == 桌面1页 (网格 4x6) ==
-  ▦多功    | ·
-  微信     | QQ     | [常用]   | ·
-  高德     | [音乐交通出行] | [购物网盘] | [玩机]
+  多功  ▦    | ·      | ·      | ·
+  微信       | QQ     | [常用] | ·
+  高德地图   | [音乐… | [购物… | [玩机]  |  [电量 ⚡]
 
 == 文件夹 ==
-  [201] 常用 (screen1 位2,2) 含15项: 抖音、小红书、一木记账、支付宝、钉钉、Edge、豆包、千问、DeepSeek、ChatGPT、米家、格力+、小米运动健康、e福州、BOSS直聘
+  [201] 常用 (screen1 位2,2) 含17项: 抖音极速版、小红书、一木记账、支付宝、钉钉、Edge、豆包、千问、DeepSeek、ChatGPT、米家、格力+、e福州、BOSS直聘、智联招聘、智谱清言、哔哩哔哩
 ```
 
 图示说明：
@@ -199,7 +201,8 @@ python miui_desktop.py restore 备份记录\备份_20260830_153000\桌面备份_
   "created": "2026-08-30 15:30:00",
   "device": { "model": "25019PNF3C" },
   "grid": "4x6",                    // 桌面网格，自动探测
-  "dbname": "launcher4x6.db",
+  "dbname": "/data/user_de/0/com.miui.home/databases/launcher4x6.db",  // 手机端完整路径
+  "widgets_restorable": false,      // 常量，提示小组件无法还原
   "favorites": [ ... ],             // 桌面对象完整行（图标、位置、文件夹、小组件）
   "screens":   [ ... ]              // 屏幕页定义
 }
@@ -217,7 +220,7 @@ python miui_desktop.py restore 备份记录\备份_20260830_153000\桌面备份_
 先 `adb devices` 确认手机在线；拔插一次数据线，手机上重新点「允许 USB 调试」；或用上面的无线方式连接。
 
 **Q2：多台手机同时插着**
-工具会列出来让你输编号选择，不会误操作到别的机器。
+工具会列出来让你输编号选择，不会误操作到别的机器。也可以先 `adb devices` 拿到序列号，再用全局参数 `--serial 序列号` 直接指定，免去每次询问。
 
 **Q3：恢复后桌面还是没变？**
 正常工具会自动 `force-stop` 桌面再拉起。极端情况手动在手机上 `设置→应用→系统桌面→强行停止` 一次，或重启手机。
@@ -242,6 +245,9 @@ python miui_desktop.py restore 备份记录\备份_20260830_153000\桌面备份_
 ## 8. 路线图（可选需求欢迎提）
 
 - [x] CLI：备份 / 查看（文本 + HTML）/ 恢复（跳过 + 提醒）
+- [x] HTML 预览增强：分屏卡片、文件夹弹窗、小组件占位、`launchCount` 点击热度参考
+- [x] 数据库字段按实际表结构自适应（`PRAGMA table_info`），兼容 OS 升级后字段增删
+- [ ] 按 `launchCount` 自动生成「低使用率应用」建议（用于桌面整理）
 - [ ] 图形界面（tkinter）按钮化
 - [ ] 定时自动备份
 - [ ] 多备份横向 diff（哪份布局比现在差了哪几个图标）

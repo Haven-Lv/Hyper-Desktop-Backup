@@ -165,9 +165,11 @@ def guess_grid(dbname):
 def read_favorites(dbpath):
     con = sqlite3.connect(dbpath)
     cur = con.cursor()
+    existing = {r[1] for r in cur.execute("PRAGMA table_info(favorites)").fetchall()}
+    cols = [c for c in FAVORITES_COLS if c in existing]
     rows = []
-    for r in cur.execute("SELECT %s FROM favorites" % ",".join(FAVORITES_COLS)):
-        rows.append(dict(zip(FAVORITES_COLS, r)))
+    for r in cur.execute("SELECT %s FROM favorites" % ",".join(cols)):
+        rows.append(dict(zip(cols, r)))
     con.close()
     return rows
 

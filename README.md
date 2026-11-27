@@ -6,12 +6,21 @@
 
 ---
 
-## 1. 目录与文件
+## 预览
+
+![桌面布局预览](docs/hero.png)
+
+*HTML 预览页：Dock、每屏网格、文件夹、小组件占位一目了然；顶部显示设备 / 网格 / 条目数 / 备份时间*
+
+![文件夹内容](docs/folders.png)
+
+*每个文件夹里的应用也在同一页面列出，并标注它原来在第几屏第几行*
 
 ```
 Hyper-Desktop-Backup\
 ├── miui_launcher.py     # 底层：adb 连接、root 读写桌面数据库、快照/回写
-├── miui_desktop.py      # 命令行工具（入口），含 HTML 预览渲染
+├── miui_desktop.py      # 命令行工具（入口）
+├── docs/                # README 用截图，含 HTML 预览渲染
 ├── .gitignore           # 忽略 __pycache__/ 与 备份记录/（备份数据不上传）
 └── README.md
 ```
@@ -171,6 +180,10 @@ python miui_desktop.py restore 备份记录\备份_20260830_153000\桌面备份_
 > - 重复出现的同一应用只保留第一个位置；
 > - 不会动小组件（DB 注入还原不了 widget 实例，恢复时跳过并提醒，槽位留空）；
 > - 未知条目类型（如 2 / 4 / 14 / 22）原样保留，不丢不炸。
+
+**终端输出长这样：**
+
+![restore 终端输出](docs/terminal.png)
 
 **跳过提示长这样：**
 

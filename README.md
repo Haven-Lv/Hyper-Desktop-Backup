@@ -1,13 +1,15 @@
-# MIUI 桌面备份 / 查看 / 恢复工具（PC 脚本）
+# HyperOS 桌面备份 / 查看 / 恢复工具（PC 脚本）
 
-> 适用：已 root 的小米 / Redmi 手机（MIUI / HyperOS），通过 USB + adb 连接电脑，备份「系统桌面」的图标布局，随时查看预览，并能一键恢复；恢复时遇到备份里有、但当前已卸载的应用**不会报错中止，而是跳过并在终端提醒**。
+> 适用：已 root 的小米 / Redmi 手机（HyperOS），通过 USB + adb 连接电脑，备份「系统桌面」的图标布局，随时查看预览，并能一键恢复；恢复时遇到备份里有、但当前已卸载的应用**不会报错中止，而是跳过并在终端提醒**。
+>
+> **实测说明**：目前**仅在 Xiaomi 15 Ultra 上实测过**，其他小米 / Redmi 机型与系统版本理论上兼容但尚未实测，使用前请先做好备份。
 
 ---
 
 ## 1. 目录与文件
 
 ```
-miui_desktop_tool\
+Hyper-Desktop-Backup\
 ├── miui_launcher.py     # 底层：adb 连接、root 读写桌面数据库、快照/回写
 ├── miui_desktop.py      # 命令行工具（入口），含 HTML 预览渲染
 ├── .gitignore           # 忽略 __pycache__/ 与 备份记录/（备份数据不上传）
@@ -20,7 +22,7 @@ miui_desktop_tool\
 
 | 项目 | 要求 |
 |---|---|
-| 手机 | 小米/Redmi，已 **root**（Magisk / KernelSU / 皮皮虾等均可） |
+| 手机 | 小米/Redmi（HyperOS），已 **root**（Magisk / KernelSU / 皮皮虾等均可）**（仅在 Xiaomi 15 Ultra 实测）** |
 | 手机开启 | 开发者选项 → USB 调试 |
 | 电脑 | Windows + Python 3.8+（本机 3.12 已装） |
 | adb | 任意 platform-tools 的 `adb.exe` |
@@ -238,7 +240,7 @@ python miui_desktop.py restore 备份记录\备份_20260830_153000\桌面备份_
 有。任何 root 写操作都要谨慎。工具每次恢复前都自动留一份备份，最坏情况也能还原；但**强烈建议**大操作前先手动多存一份 `backup`。
 
 **Q8：换手机 / 换机型能用吗？**
-能。数据库路径和文件名自动探测（`launcher*.db`），gird 也从文件名识别；只要还是 MIUI/HyperOS 桌面 + root 即可。
+理论上可以。数据库路径和文件名自动探测（`launcher*.db`），grid 也从文件名识别；只要还是 HyperOS 桌面 + root 即可。但目前**仅在 Xiaomi 15 Ultra 上实测过**，其他机型使用前建议先手动 `backup` 留档。
 
 ---
 
